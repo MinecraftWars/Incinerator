@@ -2,8 +2,10 @@ package com.minecraftwars.incinerator;
 
 import java.util.List;
 
+import org.bukkit.Material;
 import org.bukkit.block.Furnace;
 import org.bukkit.block.Sign;
+import org.bukkit.inventory.FurnaceInventory;
 import org.bukkit.inventory.ItemStack;
 
 public class IncinFurnace {
@@ -18,7 +20,7 @@ public class IncinFurnace {
     
     private int fuelQty;
     private int maxFuel;
-    private boolean isFueled;
+    private boolean isActive;
     private int actTemp;
     private int meltTemp = 250 ;
     private int maxTemp = 300;
@@ -117,122 +119,150 @@ public class IncinFurnace {
         return false;
     }
 
-	public void incinerate() 
-	{	
-		ItemStack burnStack = this.furnace.getInventory().getItem(1);
-		
-		
-	}
-	
-	private int getFuelRate(int id)
-	{
-		for (Fuel fuel : fuels)
-		{
-			if (fuel.getFuelId() == id)
-			{
-				return fuel.getValue();
-			}
-		}
-		return 0;
-	}
+    public void incinerate() 
+    {
+        removeFromInv(0, Util.getRandomNumberFrom(32, 64));
+        runTimes++;
+    }
 
-	public void update() 
-	{
-		// Check if valid TODO: squid
-		// Check fuel
-		// Add fuel
-		// Check temperature
-		// Heat && BurnFuel || Cool
-		// Incinerate
-		// Update Sign
-		
-		boolean hasFuel = checkFuel();
-		boolean needsFuel = needsFuel();
-		boolean canFuel = canFuel();
-		
-		boolean isHeated = checkHeat();
-		boolean canHeat = canHeat();
-		boolean hasHeated = false;
-		
-		if(needsFuel && canFuel)
-		{
-			addFuel();
-		}
-		if(canHeat && hasFuel)
-		{
-			hasHeated = heat();
-		}
-		if (!hasHeated)
-		{
-			cool();
-		}
-		if (isHeated)
-		{
-			incinerate();
-		}
-		
-	}
-	
-	private void cool() 
-	{
-		this.actTemp -= 1;
-	}
+    private int getFuelRate(int id)
+    {
+        for (Fuel fuel : fuels)
+        {
+            if (fuel.getFuelId() == id)
+            {
+                return fuel.getValue();
+            }
+        }
+        return 0;
+    }
 
-	private boolean canHeat() 
-	{
-		return this.actTemp < this.maxTemp;
-	}
+    public void update() 
+    {
+        // Check if valid TODO: squid
+        if (furnace == null || sign == null)
+        {
+            return;
+        }
+        // Check fuel
+        // Add fuel
+        // Check temperature
+        // Heat && BurnFuel || Cool
+        // Incinerate
+        // Update Sign
+        
+        boolean hasFuel = checkFuel();
+        boolean needsFuel = needsFuel();
+        boolean canFuel = canFuel();
+        
+        boolean isHeated = checkHeat();
+        boolean canHeat = canHeat();
+        boolean hasHeated = false;
+        
+        if(needsFuel && canFuel)
+        {
+            addFuel();
+        }
+        if(canHeat && hasFuel)
+        {
+            hasHeated = heat();
+        }
+        if (!hasHeated)
+        {
+            cool();
+        }
+        if (isHeated)
+        {
+            incinerate();
+        }
+        
+        this.isActive = isActivated();
+    }
 
-	private boolean canFuel()
-	{
-		return this.fuelQty + getFuelRate(this.furnace.getInventory().getItem(1).getType().getId()) <= this.maxFuel;
-	}
+    private void cool() 
+    {
+        this.actTemp -= 1;
+    }
 
-	private boolean checkFuel() 
-	{
-		return this.fuelQty > 1;
-	}
-	
-	private boolean needsFuel()
-	{
-		return this.fuelQty < this.maxFuel;
-	}
+    private boolean canHeat() 
+    {
+        return this.actTemp < this.maxTemp;
+    }
 
-	private boolean checkHeat() 
-	{		
-		return this.actTemp > this.meltTemp;
-	}
+    private boolean canFuel()
+    {
+        return this.fuelQty + getFuelRate(this.furnace.getInventory().getItem(1).getType().getId()) <= this.maxFuel;
+    }
 
-	private boolean fueled() 
-	{
-		if (this.fuelQty >= this.maxFuel) {
-			return true;
-		}
-		return false;
-	}
+    private boolean checkFuel() 
+    {
+        return this.fuelQty > 1;
+    }
 
-	private void addFuel() 
-	{
-		this.fuelQty += getFuelRate(this.furnace.getInventory().getItem(1).getType().getId());
-		int amt = this.furnace.getInventory().getItem(1).getAmount();
-		int id = this.furnace.getInventory().getItem(1).getType().getId();
-		this.furnace.getInventory().setItem(1, new ItemStack(id, amt-1));
-	}
+    private boolean needsFuel()
+    {
+        return this.fuelQty < this.maxFuel;
+    }
 
-	private boolean heat() 
-	{	
-		this.fuelQty -= 1;
-		this.actTemp += 1;		
-		return true;
-	}
+    private boolean checkHeat() 
+    {
+        return this.actTemp > this.meltTemp;
+    }
 
-	public int getFuelLevel() {
-		return this.fuelQty;
-	}
+    private boolean isActivated() 
+    {
+        if (checkHeat() || checkFuel()) {
+            return true;
+        }
+        return false;
+    }
 
-	public int getTemp() {
-		return this.actTemp;
-	}
-	
-	
+    private void addFuel() 
+    {
+        this.fuelQty += getFuelRate(this.furnace.getInventory().getItem(1).getType().getId());
+        int amt = this.furnace.getInventory().getItem(1).getAmount();
+        int id = this.furnace.getInventory().getItem(1).getType().getId();
+        if (amt - 1 <= 0)
+        {
+            this.furnace.getInventory().setItem(1, new ItemStack(Material.AIR));
+        }
+        else 
+        {
+            this.furnace.getInventory().setItem(1, new ItemStack(id, amt-1));
+        }
+    }
+
+    private boolean heat() 
+    {    
+        this.fuelQty -= 1;
+        this.actTemp += 1;        
+        return true;
+    }
+
+    public int getFuelLevel() {
+        return this.fuelQty;
+    }
+
+    public int getTemp() {
+        return this.actTemp;
+    }
+
+    private void removeFromInv(int slot, int amount) {
+        FurnaceInventory inv = this.furnace.getInventory();
+        Material material = inv.getItem(slot).getType();
+        if (inv.getItem(slot).getAmount() > 0 && amount > 0) {
+            int newAmount = inv.getItem(slot).getAmount();
+            newAmount = newAmount - amount;
+            if (newAmount <= 0) {
+                inv.setItem(slot, new ItemStack(Material.AIR));
+                return;
+            }
+            inv.setItem(slot, new ItemStack(material, newAmount));
+        }
+    }
+
+    public boolean isActive()
+    {
+    	return this.isActive;
+    }
 }

@@ -1,5 +1,7 @@
 package com.minecraftwars.incinerator;
 
+import java.util.Random;
+
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -18,5 +20,11 @@ public class Util {
             return blockAttached;
         }
         return null; 
+    }
+
+    public static int getRandomNumberFrom(int min, int max) {
+        Random foo = new Random();
+        int randomNumber = foo.nextInt((max + 1) - min) + min;
+        return randomNumber;
     }
 }
