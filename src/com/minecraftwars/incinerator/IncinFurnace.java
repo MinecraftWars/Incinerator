@@ -300,7 +300,7 @@ public class IncinFurnace {
 
     private void updateSign()
     {
-        this.sign.setLine(1, ChatColor.BOLD + "Incinerator]");
+        this.sign.setLine(1, ChatColor.BOLD + "[Incinerator]");
         this.sign.setLine(2, "Temp: " + this.actTemp + "/" + this.maxTemp);
         this.sign.setLine(3, "Fuel: " + this.fuelQty + "/" + this.maxFuel);
         this.sign.update();
