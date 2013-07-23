@@ -32,6 +32,8 @@ public class Incinerator extends JavaPlugin
             return;
         }
 
+        new RunnableManager().init();
+
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(inventoryListener, this);
         pm.registerEvents(blockListener, this);
