@@ -24,48 +24,6 @@ public class InventoryListener implements Listener
         
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onFurnaceHopperAdd(InventoryMoveItemEvent event)
-    {
-        
-        if (event.getDestination() instanceof org.bukkit.inventory.FurnaceInventory)
-        {
-            //check coords against database if found incinerate the itemStack and remove fuel.
-            InventoryHolder holder = event.getDestination().getHolder();
-            Block block = null;
-            if (holder instanceof Furnace)
-            {
-                block = (Block) holder;
-            }
-            else
-            {
-                return;
-            }
-            if (IncineratorManager.getInstance().getIncinerator(block.getLocation()) != null)
-            {
-                // do things...
-                Furnace furn = IncineratorManager.getInstance().getIncinerator(block.getLocation()).getFurnace();
-                ItemStack tempStack = furn.getInventory().getItem(0);
-                if(tempStack == null) return;
-                ItemStack fuelStack = furn.getInventory().getItem(1);
-                if(fuelStack == null) return;
-                int qty = tempStack.getAmount();
-                	
-                
-            }
-            
-        }
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onFurnaceManualAdd(InventoryClickEvent event)
-    {
-        if (event.getInventory() instanceof org.bukkit.inventory.FurnaceInventory)
-        {
-            //check coords against database if found incinerate the itemStack and remove fuel.
-            //if ()
-        }
-    }
 
     @EventHandler(ignoreCancelled = true)
     public void onFurnaceBurn(FurnaceBurnEvent event)
@@ -73,13 +31,7 @@ public class InventoryListener implements Listener
         Block block = event.getBlock();
         if (IncineratorManager.getInstance().getIncinerator(block.getLocation()) != null)
         {
-            /* do things...
-            Furnace furn = (Furnace)block;
-            ItemStack tempStack = furn.getInventory().getItem(0);
-            int qty = tempStack.getAmount();
-            */
-        	event.isCancelled();
-            
+        	event.isCancelled();          
         }
     }
 }
