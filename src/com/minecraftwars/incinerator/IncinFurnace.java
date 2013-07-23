@@ -1,5 +1,7 @@
 package com.minecraftwars.incinerator;
 
+import java.util.List;
+
 import org.bukkit.block.Furnace;
 import org.bukkit.block.Sign;
 
@@ -12,13 +14,25 @@ public class IncinFurnace {
 
     private Sign sign;
     private Furnace furnace;
+    
+    private int fuelQty;
+    private int maxFuel;
+    private boolean isFueled;
+    private int actTemp;
+    private int meltTemp = 250 ;
+    private int maxTemp = 300;
+ 
+    
+    private List<Fuel> fuels;
+    private int fuelPerIncin;
+    
 
-    public IncinFurnace(Sign sign) 
+    public IncinFurnace(Sign sign, Furnace furnace) 
     {
-        this(sign, (Furnace)Util.furnaceBlock(sign));
+        this(sign, furnace, 0, 0);
     }
 
-    public IncinFurnace(Sign sign, Furnace furnace)
+    public IncinFurnace(Sign sign, Furnace furnace, int fuelQty, int actTemp)
     {
         this.sign = sign;
         this.furnace = furnace;
@@ -26,6 +40,11 @@ public class IncinFurnace {
         this.x = sign.getX();
         this.y = sign.getY();
         this.z = sign.getZ();
+        this.fuelQty = fuelQty;
+        this.actTemp = actTemp;
+        //TODO: add config hooks for fuel ids and qtys.
+        fuels.add(new Fuel(1, 10));
+        fuels.add(new Fuel(2, 20));
     }
 
     public Furnace getFurnace()
@@ -95,4 +114,140 @@ public class IncinFurnace {
         } 
         return false;
     }
+
+	public void incinerate() 
+	{	
+		for (Fuel fuel : fuels)
+		{
+			if (getFuelRate(this.furnace.getInventory().getItem(1).getType().getId()) > 0)
+			{
+				
+			}
+		}
+	}
+	
+	private int getFuelRate(int id)
+	{
+		for (Fuel fuel : fuels)
+		{
+			if (fuel.getFuelId() == id)
+			{
+				return fuel.getValue();
+			}
+		}
+		return 0;
+	}
+
+	public void update() 
+	{
+		// Check if valid TODO: squid
+		// Check fuel
+		// Add fuel
+		// Check temperature
+		// Heat && BurnFuel || Cool
+		// Incinerate
+		// Update Sign
+		
+		boolean hasFuel = checkFuel();
+		boolean needsFuel = needsFuel();
+		boolean canFuel = canFuel();
+		
+		boolean isHeated = checkHeat();
+		boolean canHeat = canHeat();
+		boolean hasHeated = false;
+		
+		if(needsFuel && canFuel)
+		{
+			addFuel();
+		}
+		
+		if (hasFuel && isHeated)
+		{
+			incinerate();
+		}
+		
+		/*boolean isFueled = fueled();
+		boolean hasHeated = false;
+		if (this.fuelQty < 1) 
+		{
+			this.isFueled = false;
+		}
+		if (!isFueled)
+		{
+			addFuel();
+		}
+		hasHeated = heat();
+
+		this.actTemp -= 1;
+		*/
+	}
+	
+	private boolean canHeat() 
+	{
+		return this.actTemp < this.maxTemp;
+	}
+
+	private boolean canFuel()
+	{
+		return this.fuelQty + getFuelRate(this.furnace.getInventory().getItem(1).getType().getId()) <= this.maxFuel;
+	}
+
+	private boolean checkFuel() 
+	{
+		return this.fuelQty > 1;
+	}
+	
+	private boolean needsFuel()
+	{
+		return this.fuelQty < this.maxFuel;
+	}
+
+	private boolean checkHeat() 
+	{		
+		return this.actTemp > this.meltTemp;
+	}
+
+	private boolean fueled() 
+	{
+		if (this.fuelQty >= this.maxFuel) {
+			return true;
+		}
+		return false;
+	}
+
+	private void addFuel() 
+	{
+		
+		
+	}
+
+	private boolean heat() 
+	{
+		if (this.actTemp > this.meltTemp)
+		{
+			if (this.actTemp < this.maxTemp)
+			{
+				
+			}
+			
+		}
+		else if (this.fuelQty > 0 && this.actTemp < this.meltTemp)
+		{
+			
+		}
+		
+		this.fuelQty -= 1;
+		this.actTemp += 1;		
+		return true;
+	}
+
+	public int getFuelLevel() {
+		return this.fuelQty;
+	}
+
+	public int getTemp() {
+		return this.actTemp;
+	}
+	
+	
 }

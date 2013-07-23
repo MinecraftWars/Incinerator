@@ -105,7 +105,7 @@ public class IncineratorManager
         List<String> data = new ArrayList<String>();
         for (IncinFurnace incin : incinerators)
         {
-            String line = incin.getWorldName() + "," + incin.getX() + "," + incin.getY() + "," + incin.getZ();
+            String line = incin.getWorldName() + "," + incin.getX() + "," + incin.getY() + "," + incin.getZ() + "," + incin.getFuelLevel() + "," + incin.getTemp();
             data.add(line);
         }
         section.set("Locations", data);
@@ -123,7 +123,9 @@ public class IncineratorManager
             Location loc = new Location(world, getInt(inc[1]), getInt(inc[2]), getInt(inc[3]));
             Sign sign = (Sign) world.getBlockAt(loc).getState();
             Furnace furnace = (Furnace) Util.furnaceBlock(sign).getState();
-            incineratorManager.addFurnace(new IncinFurnace(sign, furnace));
+            int fuelLevel = getInt(inc[4]);
+            int temp = getInt(inc[5]);
+            incineratorManager.addFurnace(new IncinFurnace(sign, furnace, fuelLevel, temp));
         }
     }
 
@@ -131,4 +133,13 @@ public class IncineratorManager
     {
         return Integer.parseInt(string);
     }
+
+	public void incinerateAll() 
+	{
+		for (IncinFurnace incinerator : incinerators)
+		{
+			incinerator.update();
+		}
+		
+	}
 }
