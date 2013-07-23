@@ -25,7 +25,7 @@ public class IncinFurnace {
     private int meltTemp = 250 ;
     private int maxTemp = 300;
     private int runTimes;
- 
+    private boolean signNeedsUpdate = false;
     
     private List<Fuel> fuels;
     private int fuelPerIncin;
@@ -47,8 +47,8 @@ public class IncinFurnace {
         this.fuelQty = fuelQty;
         this.actTemp = actTemp;
         //TODO: add config hooks for fuel ids and qtys.
-        fuels.add(new Fuel(1, 10));
-        fuels.add(new Fuel(2, 20));
+        fuels.add(new Fuel(263, 10));
+        fuels.add(new Fuel(173, 100));
     }
 
     public Furnace getFurnace()
@@ -175,13 +175,17 @@ public class IncinFurnace {
         {
             incinerate();
         }
-        
+        if (this.signNeedsUpdate)
+        {
+            updateSign();
+        }
         this.isActive = isActivated();
     }
 
     private void cool() 
     {
         this.actTemp -= 1;
+        signNeedsUpdate = true;
     }
 
     private boolean canHeat() 
@@ -230,12 +234,14 @@ public class IncinFurnace {
         {
             this.furnace.getInventory().setItem(1, new ItemStack(id, amt-1));
         }
+        signNeedsUpdate = true;
     }
 
     private boolean heat() 
     {    
         this.fuelQty -= 1;
-        this.actTemp += 1;        
+        this.actTemp += 1;
+        signNeedsUpdate = true;
         return true;
     }
 
@@ -261,8 +267,15 @@ public class IncinFurnace {
         }
     }
 
+    private void updateSign()
+    {
+        sign.setLine(2, "Temp: " + this.actTemp + "/" + this.maxTemp);
+        sign.setLine(3, "Fuel: " + this.fuelQty + "/" + this.maxFuel);
+        signNeedsUpdate = false;
+    }
+
     public boolean isActive()
     {
-    	return this.isActive;
+        return this.isActive;
     }
 }
