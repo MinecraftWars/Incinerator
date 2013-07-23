@@ -44,10 +44,13 @@ public class InventoryListener implements Listener
             if (IncineratorManager.getInstance().getIncinerator(block.getLocation()) != null)
             {
                 // do things...
-                Furnace furn = (Furnace) block;
+                Furnace furn = IncineratorManager.getInstance().getIncinerator(block.getLocation()).getFurnace();
                 ItemStack tempStack = furn.getInventory().getItem(0);
+                if(tempStack == null) return;
+                ItemStack fuelStack = furn.getInventory().getItem(1);
+                if(fuelStack == null) return;
                 int qty = tempStack.getAmount();
-                
+                	
                 
             }
             
@@ -70,12 +73,12 @@ public class InventoryListener implements Listener
         Block block = event.getBlock();
         if (IncineratorManager.getInstance().getIncinerator(block.getLocation()) != null)
         {
-            // do things...
+            /* do things...
             Furnace furn = (Furnace)block;
             ItemStack tempStack = furn.getInventory().getItem(0);
             int qty = tempStack.getAmount();
-            
-        
+            */
+        	event.isCancelled();
             
         }
     }
