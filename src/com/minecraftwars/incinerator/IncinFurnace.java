@@ -124,10 +124,20 @@ public class IncinFurnace {
 
     public void incinerate() 
     {
-        if (removeFromInv(0, Util.getRandomNumberFrom(32, 64)))
+        if (canIncinerate())
         {
-            furnace.setBurnTime((short) 1000);
-            runTimes++;
+            furnace.setCookTime((short) 200);
+            if (removeFromInv(0, Util.getRandomNumberFrom(32, 64)))
+            {
+                // TODO: Manage BurnTime
+                // TODO: Change block to burning furnace?
+                furnace.setBurnTime((short) 100);
+                runTimes++;
+            }
+        }
+        else
+        {
+            furnace.setCookTime((short) 0);
         }
     }
 
@@ -215,6 +225,21 @@ public class IncinFurnace {
             return false;
         }
         return this.fuelQty + amt <= this.maxFuel;
+    }
+
+    private boolean canIncinerate()
+    {
+        FurnaceInventory inv = this.furnace.getInventory();
+        ItemStack item = inv.getItem(0);
+        if (item == null)
+        {
+            return false;
+        }
+        else if (item.getTypeId() == 0 || item.getAmount() <= 0)
+        {
+            return false;
+        }
+        return true;
     }
 
     private boolean checkFuel() 
