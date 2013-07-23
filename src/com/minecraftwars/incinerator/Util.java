@@ -2,7 +2,6 @@ package com.minecraftwars.incinerator;
 
 import java.util.Random;
 
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
@@ -15,7 +14,7 @@ public class Util {
         BlockFace attached = signData.getAttachedFace();
 
         Block blockAttached = signBlock.getRelative(attached);
-        if (blockAttached.getType() == Material.BURNING_FURNACE || blockAttached.getType() == Material.FURNACE)
+        if (blockAttached.getTypeId() == 61 || blockAttached.getTypeId() == 62)
         {
             return blockAttached;
         }

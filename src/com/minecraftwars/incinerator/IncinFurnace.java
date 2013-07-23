@@ -95,8 +95,8 @@ public class IncinFurnace {
             {
                 return true;
             }
-        }
-        if (obj instanceof Sign)
+        } 
+        else if (obj instanceof Sign)
         {
             if (this.sign.getLocation().equals(((Sign) obj).getLocation()))
             {
@@ -126,6 +126,7 @@ public class IncinFurnace {
     {
         if (removeFromInv(0, Util.getRandomNumberFrom(32, 64)))
         {
+            furnace.setBurnTime((short) 1000);
             runTimes++;
         }
     }
@@ -218,7 +219,7 @@ public class IncinFurnace {
 
     private boolean checkFuel() 
     {
-        return this.fuelQty > 1;
+        return this.fuelQty >= 1;
     }
 
     private boolean needsFuel()
@@ -291,7 +292,7 @@ public class IncinFurnace {
             }
             else
             {
-            	inv.setItem(slot, new ItemStack(material, newAmount));
+                inv.setItem(slot, new ItemStack(material, newAmount));
             }
             return true;
         }
