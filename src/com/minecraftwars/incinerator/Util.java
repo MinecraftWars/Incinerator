@@ -1,8 +1,8 @@
 package com.minecraftwars.incinerator;
 
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Furnace;
 import org.bukkit.block.Sign;
 
 public class Util {
@@ -13,8 +13,7 @@ public class Util {
         BlockFace attached = signData.getAttachedFace();
 
         Block blockAttached = signBlock.getRelative(attached);
-        //if (IncineratorManager.getInstance().contains(blockAttached.getType()))
-        if (blockAttached instanceof Furnace)
+        if (blockAttached.getType() == Material.BURNING_FURNACE || blockAttached.getType() == Material.FURNACE)
         {
             return blockAttached;
         }

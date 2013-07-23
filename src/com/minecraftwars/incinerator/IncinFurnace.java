@@ -1,107 +1,98 @@
 package com.minecraftwars.incinerator;
 
-import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.block.Furnace;
 import org.bukkit.block.Sign;
 
 public class IncinFurnace {
-	
-	private int id;
-	private String world;
-	private int x;
-	private int y;
-	private int z;
-	
-	private Sign sign;
-	private Block furnace;
-	
-	public IncinFurnace(int id, Block block) 
-	{
-		this.id = id;
-		if (block instanceof Sign) {
-			sign = (Sign)block;
-			furnace = getIncinFromBlock(block);
-		} else if (block instanceof Furnace) {
-			// do sonmething stupid
-		}
-		this.world = furnace.getWorld().getName();
-		this.x = block.getX();
-		this.y = block.getY();
-		this.z = block.getZ();
-	}
-	
-	public IncinFurnace(Block block) 
-	{
-		int id = 0;
-		
-		this.world = furnace.getWorld().getName();
-		this.x = furnace.getX();
-		this.y = furnace.getY();
-		this.z = furnace.getZ();
-	}
-	
-	private Block getIncinFromBlock(Block block)
-	{
-		Block incinBlock = null;
-		
-		if (block instanceof Sign)
-		{
-			incinBlock = Util.furnaceBlock((Sign)block);
-			if (incinBlock != null)
-			{
-				return incinBlock;
-			}
-		}
-		if (block.getType() == Material.FURNACE)
-		{
-			return block;
-		}
-		
-		return null;
-	}
-	
-	public Block getFurnace()
-	{
-		return this.furnace;
-	}
-	
-	public String getWorldName()
-	{
-		return this.world;
-	}
-	
-	public Sign getSign()
-	{
-		return this.sign;
-	}
 
-	public int getId() {
-		return this.id;
-	}
+    private String world;
+    private int x;
+    private int y;
+    private int z;
 
-	public int getX() {
-		return this.x;
-	}
+    private Sign sign;
+    private Furnace furnace;
 
-	public int getY() {
-		return this.y;
-	}
+    public IncinFurnace(Sign sign) 
+    {
+        this(sign, (Furnace)Util.furnaceBlock(sign));
+    }
 
-	public int getZ() {
-		return this.z;
-	}
+    public IncinFurnace(Sign sign, Furnace furnace)
+    {
+        this.sign = sign;
+        this.furnace = furnace;
+        this.world = sign.getWorld().getName();
+        this.x = sign.getX();
+        this.y = sign.getY();
+        this.z = sign.getZ();
+    }
 
-	public boolean equals(IncinFurnace furnace)
-	{
-		if (this.getId() == furnace.getId())
-		{
-			return true;
-		} 
-		else if (this.getX() == furnace.getX() && this.getY() == furnace.getY() && this.getZ() == furnace.getZ()) 
-		{
-			return true;
-		}
-		return false;
-	}
+    public Furnace getFurnace()
+    {
+        return this.furnace;
+    }
+
+    public String getWorldName()
+    {
+        return this.world;
+    }
+
+    public Sign getSign()
+    {
+        return this.sign;
+    }
+
+    public int getX() {
+        return this.x;
+    }
+
+    public int getY() {
+        return this.y;
+    }
+
+    public int getZ() {
+        return this.z;
+    }
+
+    @Override
+    public boolean equals(Object obj) // TODO: Fix Me!!!
+    {
+        // null check
+        if (obj == null)
+            return false;
+
+        // Check if we equal a furnance first..
+        if (obj instanceof Furnace) 
+        {
+            if (this.furnace.getLocation().equals(((Furnace) obj).getLocation())) 
+            {
+                return true;
+            }
+        }
+        if (obj instanceof Sign)
+        {
+            if (this.sign.getLocation().equals(((Sign) obj).getLocation()))
+            {
+                return true;
+            }
+        }
+
+        if (this == obj)
+            return true;
+        if (getClass() != obj.getClass())
+            return false;
+
+        // Check the Incinerator
+        IncinFurnace other = (IncinFurnace) obj;
+        if (sign.getLocation().equals(other.getSign().getLocation()))
+        {
+            return true;
+        } 
+        else if (furnace.getLocation().equals(other.getFurnace().getLocation()))
+        {
+            return true;
+        } 
+        return false;
+    }
 }
