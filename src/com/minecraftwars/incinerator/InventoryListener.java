@@ -1,38 +1,82 @@
 package com.minecraftwars.incinerator;
 
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Furnace;
+import org.bukkit.block.Sign;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.FurnaceBurnEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 public class InventoryListener implements Listener
 {
-	public InventoryListener()
-	{
-		
-	}
+    public InventoryListener()
+    {
+        
+    }
 
-	// FIXME: This is called only when an itemstack is burned as FUEL in a furnace.  I.E. When coal is used
-	// Items that do not "burn" do not fire this event..
-	// TODO: Come up with better way to manage the incinerator
-	@EventHandler(ignoreCancelled = true)
-	public void onFurnaceBurn(FurnaceBurnEvent event)
-	{
-		Block block = event.getBlock();
-		//check furnace block against database, if found incinerate the itemStack and remove fuel.
-		if (IncineratorManager.getInstance().isBlockIncinerator(block))
-		{
-			//IncinFurnace incinerator = IncineratorManager.getInstance().getIncinerator(block.getLocation());
-			//incinerator.getFurnace();
-			
-			// do things...
-			Furnace furn = (Furnace)block;
-			//ItemStack tempStack = furn.getInventory().getItem(0);
-			//int qty = tempStack.getAmount();
-			// do moar things..
-			furn.getInventory().clear();
-		}
-	}
+    @EventHandler(ignoreCancelled = true)
+    public void onFurnaceHopperAdd(InventoryMoveItemEvent event)
+    {
+        
+        if (event.getDestination() instanceof org.bukkit.inventory.FurnaceInventory)
+        {
+            //check coords against database if found incinerate the itemStack and remove fuel.
+            InventoryHolder holder = event.getDestination().getHolder();
+            Block block = null;
+            if (holder instanceof Furnace)
+            {
+                block = (Block) holder;
+            }
+            else
+            {
+                return;
+            }
+            if (IncineratorManager.getInstance().getIncinerator(block.getLocation()) != null)
+            {
+                // do things...
+                Furnace furn = (Furnace) block;
+                ItemStack tempStack = furn.getInventory().getItem(0);
+                int qty = tempStack.getAmount();
+                
+                
+            }
+            
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onFurnaceManualAdd(InventoryClickEvent event)
+    {
+        if (event.getInventory() instanceof org.bukkit.inventory.FurnaceInventory)
+        {
+            //check coords against database if found incinerate the itemStack and remove fuel.
+            //if ()
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onFurnaceBurn(FurnaceBurnEvent event)
+    {
+        Block block = event.getBlock();
+        if (IncineratorManager.getInstance().getIncinerator(block.getLocation()) != null)
+        {
+            // do things...
+            Furnace furn = (Furnace)block;
+            ItemStack tempStack = furn.getInventory().getItem(0);
+            int qty = tempStack.getAmount();
+            
+        
+            
+        }
+    }
 }
