@@ -122,23 +122,19 @@ public class IncinFurnace {
         return false;
     }
 
-    public void incinerate() 
+    private void incinerate() 
     {
         if (canIncinerate())
         {
-            furnace.setCookTime((short) 200);
             if (removeFromInv(0, Util.getRandomNumberFrom(32, 64)))
             {
                 // TODO: Manage BurnTime
                 // TODO: Change block to burning furnace?
-                furnace.setBurnTime((short) 100);
+                furnace.setBurnTime((short) 1000);
                 runTimes++;
             }
         }
-        else
-        {
-            furnace.setCookTime((short) 0);
-        }
+        furnace.update();
     }
 
     private int getFuelRate(int id)
@@ -265,7 +261,7 @@ public class IncinFurnace {
         return false;
     }
 
-    private void addFuel() 
+    private void addFuel()
     {
         this.fuelQty += getFuelRate(this.furnace.getInventory().getItem(1).getType().getId());
         int amt = this.furnace.getInventory().getItem(1).getAmount();
@@ -281,8 +277,8 @@ public class IncinFurnace {
         signNeedsUpdate = true;
     }
 
-    private boolean heat() 
-    {    
+    private boolean heat()
+    {
         this.fuelQty -= 1;
         this.actTemp += 1;
         signNeedsUpdate = true;
@@ -297,7 +293,8 @@ public class IncinFurnace {
         return this.actTemp;
     }
 
-    private boolean removeFromInv(int slot, int amount) {
+    private boolean removeFromInv(int slot, int amount)
+    {
         if (this.furnace.getInventory() == null)
         {
             return false;
@@ -309,7 +306,8 @@ public class IncinFurnace {
             return false;
         }
         Material material = item.getType();
-        if (inv.getItem(slot).getAmount() > 0 && amount > 0 && material != Material.AIR) {
+        if (inv.getItem(slot).getAmount() > 0 && amount > 0 && material != Material.AIR)
+        {
             int newAmount = inv.getItem(slot).getAmount();
             newAmount = newAmount - amount;
             if (newAmount <= 0) {
@@ -336,5 +334,10 @@ public class IncinFurnace {
     public boolean isActive()
     {
         return this.isActive;
+    }
+
+    public boolean isHot()
+    {
+        return checkHeat();
     }
 }

@@ -17,9 +17,14 @@ public class PlayerListener implements Listener {
         {
             Block block = event.getClickedBlock();
             Player player = event.getPlayer();
-            if (IncineratorManager.getInstance().isBlockIncinerator(block))
+            IncinFurnace incinerator = IncineratorManager.getInstance().getIncinerator(block.getLocation());
+            if (incinerator != null)
             {
-                player.sendMessage(ChatColor.RED + "It's Hot! Ouch!");
+                if (incinerator.isHot())
+                {
+                    player.sendMessage(ChatColor.RED + "It's Hot! Ouch!");
+                    player.damage(0.5D);
+                }
             }
         }
     }
