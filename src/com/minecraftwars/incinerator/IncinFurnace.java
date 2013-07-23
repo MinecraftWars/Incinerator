@@ -1,5 +1,6 @@
 package com.minecraftwars.incinerator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Material;
@@ -47,6 +48,7 @@ public class IncinFurnace {
         this.fuelQty = fuelQty;
         this.actTemp = actTemp;
         //TODO: add config hooks for fuel ids and qtys.
+        fuels = new ArrayList<Fuel>();
         fuels.add(new Fuel(263, 10));
         fuels.add(new Fuel(173, 100));
     }
