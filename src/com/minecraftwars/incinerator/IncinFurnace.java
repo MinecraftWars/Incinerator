@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.bukkit.block.Furnace;
 import org.bukkit.block.Sign;
+import org.bukkit.inventory.ItemStack;
 
 public class IncinFurnace {
 
@@ -21,6 +22,7 @@ public class IncinFurnace {
     private int actTemp;
     private int meltTemp = 250 ;
     private int maxTemp = 300;
+    private int runTimes;
  
     
     private List<Fuel> fuels;
@@ -117,13 +119,9 @@ public class IncinFurnace {
 
 	public void incinerate() 
 	{	
-		for (Fuel fuel : fuels)
-		{
-			if (getFuelRate(this.furnace.getInventory().getItem(1).getType().getId()) > 0)
-			{
-				
-			}
-		}
+		ItemStack burnStack = this.furnace.getInventory().getItem(1);
+		
+		
 	}
 	
 	private int getFuelRate(int id)
@@ -160,28 +158,26 @@ public class IncinFurnace {
 		{
 			addFuel();
 		}
-		
-		if (hasFuel && isHeated)
+		if(canHeat && hasFuel)
+		{
+			hasHeated = heat();
+		}
+		if (!hasHeated)
+		{
+			cool();
+		}
+		if (isHeated)
 		{
 			incinerate();
 		}
 		
-		/*boolean isFueled = fueled();
-		boolean hasHeated = false;
-		if (this.fuelQty < 1) 
-		{
-			this.isFueled = false;
-		}
-		if (!isFueled)
-		{
-			addFuel();
-		}
-		hasHeated = heat();
-
-		this.actTemp -= 1;
-		*/
 	}
 	
+	private void cool() 
+	{
+		this.actTemp -= 1;
+	}
+
 	private boolean canHeat() 
 	{
 		return this.actTemp < this.maxTemp;
@@ -217,25 +213,14 @@ public class IncinFurnace {
 
 	private void addFuel() 
 	{
-		
-		
+		this.fuelQty += getFuelRate(this.furnace.getInventory().getItem(1).getType().getId());
+		int amt = this.furnace.getInventory().getItem(1).getAmount();
+		int id = this.furnace.getInventory().getItem(1).getType().getId();
+		this.furnace.getInventory().setItem(1, new ItemStack(id, amt-1));
 	}
 
 	private boolean heat() 
-	{
-		if (this.actTemp > this.meltTemp)
-		{
-			if (this.actTemp < this.maxTemp)
-			{
-				
-			}
-			
-		}
-		else if (this.fuelQty > 0 && this.actTemp < this.meltTemp)
-		{
-			
-		}
-		
+	{	
 		this.fuelQty -= 1;
 		this.actTemp += 1;		
 		return true;
