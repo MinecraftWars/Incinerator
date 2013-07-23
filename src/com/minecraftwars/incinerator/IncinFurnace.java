@@ -3,6 +3,7 @@ package com.minecraftwars.incinerator;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Furnace;
 import org.bukkit.block.Sign;
@@ -20,17 +21,17 @@ public class IncinFurnace {
     private Furnace furnace;
     
     private int fuelQty;
-    private int maxFuel;
-    private boolean isActive;
+    private int maxFuel = 500;
     private int actTemp;
     private int meltTemp = 250 ;
     private int maxTemp = 300;
-    private int runTimes;
-    private boolean signNeedsUpdate = false;
+    private int runTimes = 0;
     
     private List<Fuel> fuels;
     private int fuelPerIncin;
     
+    private boolean signNeedsUpdate = false;
+    private boolean isActive = false;
 
     public IncinFurnace(Sign sign, Furnace furnace) 
     {
@@ -123,8 +124,10 @@ public class IncinFurnace {
 
     public void incinerate() 
     {
-        removeFromInv(0, Util.getRandomNumberFrom(32, 64));
-        runTimes++;
+        if (removeFromInv(0, Util.getRandomNumberFrom(32, 64)))
+        {
+            runTimes++;
+        }
     }
 
     private int getFuelRate(int id)
@@ -186,8 +189,11 @@ public class IncinFurnace {
 
     private void cool() 
     {
-        this.actTemp -= 1;
-        signNeedsUpdate = true;
+        if (this.actTemp - 1 >= 0)
+        {
+            this.actTemp -= 1;
+            signNeedsUpdate = true;
+        }
     }
 
     private boolean canHeat() 
@@ -197,7 +203,17 @@ public class IncinFurnace {
 
     private boolean canFuel()
     {
-        return this.fuelQty + getFuelRate(this.furnace.getInventory().getItem(1).getType().getId()) <= this.maxFuel;
+        ItemStack stack = this.furnace.getInventory().getItem(1);
+        int amt = 0;
+        if (stack != null)
+        {
+            amt = getFuelRate(stack.getType().getId());
+        }
+        if (amt == 0)
+        {
+            return false;
+        }
+        return this.fuelQty + amt <= this.maxFuel;
     }
 
     private boolean checkFuel() 
@@ -255,24 +271,39 @@ public class IncinFurnace {
         return this.actTemp;
     }
 
-    private void removeFromInv(int slot, int amount) {
+    private boolean removeFromInv(int slot, int amount) {
+        if (this.furnace.getInventory() == null)
+        {
+            return false;
+        }
         FurnaceInventory inv = this.furnace.getInventory();
-        Material material = inv.getItem(slot).getType();
-        if (inv.getItem(slot).getAmount() > 0 && amount > 0) {
+        ItemStack item = inv.getItem(slot);
+        if (item == null)
+        {
+            return false;
+        }
+        Material material = item.getType();
+        if (inv.getItem(slot).getAmount() > 0 && amount > 0 && material != Material.AIR) {
             int newAmount = inv.getItem(slot).getAmount();
             newAmount = newAmount - amount;
             if (newAmount <= 0) {
                 inv.setItem(slot, new ItemStack(Material.AIR));
-                return;
             }
-            inv.setItem(slot, new ItemStack(material, newAmount));
+            else
+            {
+            	inv.setItem(slot, new ItemStack(material, newAmount));
+            }
+            return true;
         }
+        return false;
     }
 
     private void updateSign()
     {
-        sign.setLine(2, "Temp: " + this.actTemp + "/" + this.maxTemp);
-        sign.setLine(3, "Fuel: " + this.fuelQty + "/" + this.maxFuel);
+        this.sign.setLine(1, ChatColor.BOLD + "Incinerator]");
+        this.sign.setLine(2, "Temp: " + this.actTemp + "/" + this.maxTemp);
+        this.sign.setLine(3, "Fuel: " + this.fuelQty + "/" + this.maxFuel);
+        this.sign.update();
         signNeedsUpdate = false;
     }
 
